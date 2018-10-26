@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Mini-Reddit</string>
+    <string name="app_name">Reddit</string>
     <string name="refreshFeed">Refresh Feed</string>
 
     <string name="post_url">post_url</string>
@@ -8,5 +8,6 @@
     <string name="post_author">post_author</string>
     <string name="post_updated">post_updated</string>
     <string name="none">None</string>
+    <string name="type_a_sub_reddit">Type a sub reddit</string>
 
 </resources>

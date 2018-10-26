@@ -33,20 +33,20 @@
             android:id="@+id/editTextSearch"
             android:layout_width="0dp"
             android:layout_height="60dp"
-            android:layout_weight="75"
-            android:textSize="15dp"
-            android:hint="Type a sub reddit"
+            android:layout_weight="90"
+            android:textSize="15sp"
+            android:hint="@string/type_a_sub_reddit"
             android:layout_gravity="bottom"
             android:textAlignment="center"/>
 
-        <Button
+        <ImageButton
+            android:id="@+id/buttonRefreshFeed"
             android:layout_width="0dp"
             android:layout_height="60dp"
-            android:layout_weight="25"
-            android:text="@string/refreshFeed"
             android:layout_gravity="center"
+            android:layout_weight="10"
             android:gravity="center"
-            android:id="@+id/buttonRefreshFeed"/>
+            android:text="@string/refreshFeed" />
 
     </LinearLayout>
 
@@ -54,6 +54,6 @@
         android:layout_below="@+id/linearLayoutSearch"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/listView"></ListView>
+        android:id="@+id/listView" />
 
 </RelativeLayout>

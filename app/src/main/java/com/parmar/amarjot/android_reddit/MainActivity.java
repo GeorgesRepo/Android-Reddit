@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -25,6 +26,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -53,15 +55,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupSearchButton() {
 
-        Button button = findViewById(R.id.buttonRefreshFeed);
+        ImageButton button = findViewById(R.id.buttonRefreshFeed);
+        button.setBackground(getDrawable(R.drawable.ic_baseline_refresh_24px));
+
         final EditText editText = findViewById(R.id.editTextSearch);
 
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
                 String temp = editText.getText().toString();
-                if (temp != null) {
-
+                if (!temp.equals("")){
+                    Log.e(TAG, "setupSearchButton: user searched: " + temp);
                     currentFeed = temp;
                     initRedditFeed();
                 }

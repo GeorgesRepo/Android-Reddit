@@ -24,7 +24,7 @@
             android:paddingRight="24dp">
 
 
-            <ImageView android:src="@drawable/ic_launcher_background"
+            <ImageView android:src="@drawable/redditicon"
                 android:layout_width="wrap_content"
                 android:layout_height="72dp"
                 android:layout_marginBottom="24dp"
@@ -74,8 +74,5 @@
                 android:textSize="16dip"/>
 
         </LinearLayout>
-
-
-
     </RelativeLayout>
 </ScrollView>

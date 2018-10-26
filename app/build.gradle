@@ -30,4 +30,10 @@ dependencies {
 
     implementation 'com.android.support:cardview-v7:28.0.0'
     implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+
+    //Design Library needed to Coordinator Layout
+    implementation 'com.android.support:design:28.0.0'
+
+    //Retrofit Gson converter
+    implementation 'com.squareup.retrofit2:converter-gson:2.2.0'
 }
