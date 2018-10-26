@@ -8,14 +8,25 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import com.parmar.amarjot.android_reddit.FeedAPI;
 import com.parmar.amarjot.android_reddit.R;
+import com.parmar.amarjot.android_reddit.URLS;
+
+import java.util.HashMap;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class LoginActivity extends AppCompatActivity{
 
     private static final String TAG = "LoginActivity";
-
+    private URLS urls = new URLS();
     private ProgressBar mProgressBar;
     private EditText mUsername;
     private EditText mPassword;
@@ -43,10 +54,42 @@ public class LoginActivity extends AppCompatActivity{
                 if(!username.equals("") && !password.equals("")){
                     mProgressBar.setVisibility(View.VISIBLE);
                     //method for signing in
+                    login(username, password);
                 }
             }
         });
 
+    }
+
+    private void login(final String username, String password) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(urls.LOGIN_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        FeedAPI feedAPI = retrofit.create(FeedAPI.class);
+
+        // Make header
+        HashMap<String, String> headerMap = new HashMap<>();
+        headerMap.put("Content-Type", "application/json");
+
+        // Make sign in request
+        Call<CheckLogin> call = feedAPI.signIn(headerMap, username, username, password, "json");
+
+        // Request sign in
+        call.enqueue(new Callback<CheckLogin>() {
+            @Override
+            public void onResponse(Call<CheckLogin> call, Response<CheckLogin> response) {
+                Log.d(TAG, "onResponse: Server Response: " + response.toString());
+                Log.d(TAG, "onResponse: login: " + response.toString());
+            }
+
+            @Override
+            public void onFailure(Call<CheckLogin> call, Throwable t) {
+                Log.e(TAG, "onFailure: unable to login: " + t.getMessage());
+                Toast.makeText(LoginActivity.this, "An error occured", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
 

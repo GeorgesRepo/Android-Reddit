@@ -153,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
         return posts;
     }
 
+    // Attaches Posts to list and adds onClick listner
     private void attachRedditFeedToList(final ArrayList<Post> posts) {
 
         ListView listView = findViewById(R.id.listView);
