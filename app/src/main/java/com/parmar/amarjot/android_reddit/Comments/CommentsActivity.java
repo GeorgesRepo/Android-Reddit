@@ -89,21 +89,6 @@ public class CommentsActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
 
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                Log.d(TAG, "onMenuItemClick: clicked menu item: " + item);
-
-                switch(item.getItemId()){
-                    case R.id.navLogin:
-                        Intent intent = new Intent(CommentsActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                }
-
-                return false;
-            }
-        });
-
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24px);
@@ -257,11 +242,6 @@ public class CommentsActivity extends AppCompatActivity {
         defaultImage = CommentsActivity.this.getResources().getIdentifier("@drawable/reddit_alien",null,CommentsActivity.this.getPackageName());
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.navigation_menu, menu);
-        return true;
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

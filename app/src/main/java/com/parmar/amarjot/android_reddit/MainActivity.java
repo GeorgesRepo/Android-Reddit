@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.parmar.amarjot.android_reddit.Account.LoginActivity;
 import com.parmar.amarjot.android_reddit.Comments.CommentsActivity;
 import com.parmar.amarjot.android_reddit.model.Feed;
 import com.parmar.amarjot.android_reddit.model.entry.Entry;
@@ -184,9 +186,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Log.d(TAG, "onMenuItemClick: clicked menu item: " + item);
+
+                switch(item.getItemId()){
+                    case R.id.navLogin:
+                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                }
+
                 return false;
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.navigation_menu, menu);
+        return true;
     }
 
     // Used to print content contained in posts

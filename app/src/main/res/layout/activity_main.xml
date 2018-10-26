@@ -17,7 +17,6 @@
             android:id="@+id/toolbar_main">
 
         </android.support.v7.widget.Toolbar>
-
     </RelativeLayout>
 
     <LinearLayout
