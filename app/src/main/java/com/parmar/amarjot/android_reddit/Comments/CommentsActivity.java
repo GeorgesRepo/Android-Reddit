@@ -1,4 +1,4 @@
-package com.parmar.amarjot.android_reddit;
+package com.parmar.amarjot.android_reddit.Comments;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -26,6 +26,11 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.parmar.amarjot.android_reddit.Account.LoginActivity;
+import com.parmar.amarjot.android_reddit.ExtractXML;
+import com.parmar.amarjot.android_reddit.FeedAPI;
+import com.parmar.amarjot.android_reddit.R;
+import com.parmar.amarjot.android_reddit.URLS;
 import com.parmar.amarjot.android_reddit.model.Feed;
 import com.parmar.amarjot.android_reddit.model.entry.Entry;
 
@@ -39,7 +44,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
-class CommentsActivity extends AppCompatActivity {
+public class CommentsActivity extends AppCompatActivity {
 
     private static final String TAG = "CommentsActivity";
     URLS urls = new URLS();
@@ -55,7 +60,7 @@ class CommentsActivity extends AppCompatActivity {
     private String currentFeed;
     private ListView mListView;
 
-    private ArrayList<com.parmar.amarjot.android_reddit.Comment> mComments;
+    private ArrayList<Comment> mComments;
     private ProgressBar mProgressBar;
     private TextView progressText;
 
@@ -128,7 +133,7 @@ class CommentsActivity extends AppCompatActivity {
 
 
                     try{
-                        com.parmar.amarjot.android_reddit.Comment comment = new com.parmar.amarjot.android_reddit.Comment(commentDetails.get(0),
+                        Comment comment = new Comment(commentDetails.get(0),
                                 entries.get(i).getAuthor().getName(),
                                 entries.get(i).getUpdated(),
                                 entries.get(i).getId());
@@ -139,7 +144,7 @@ class CommentsActivity extends AppCompatActivity {
                     }
                     catch (NullPointerException e){
 
-                        com.parmar.amarjot.android_reddit.Comment comment = new com.parmar.amarjot.android_reddit.Comment (
+                        Comment comment = new Comment(
                                 commentDetails.get(0),
                                 getString(R.string.none),
                                 entries.get(i).getUpdated(),

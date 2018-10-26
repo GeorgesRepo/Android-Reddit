@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Android-Reddit</string>
+    <string name="app_name">Mini-Reddit</string>
     <string name="refreshFeed">Refresh Feed</string>
 
     <string name="post_url">post_url</string>

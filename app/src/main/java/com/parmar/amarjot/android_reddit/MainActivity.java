@@ -3,7 +3,9 @@ package com.parmar.amarjot.android_reddit;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -11,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.parmar.amarjot.android_reddit.Comments.CommentsActivity;
 import com.parmar.amarjot.android_reddit.model.Feed;
 import com.parmar.amarjot.android_reddit.model.entry.Entry;
 
@@ -42,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private void init() {
 
         // Sets up the reddit feed on list view
+        setupToolbar();
         initRedditFeed();
         setupSearchButton();
     }
@@ -164,6 +168,19 @@ public class MainActivity extends AppCompatActivity {
 
                 startActivity(intent);
                 overridePendingTransition( R.anim.slide_in_right, R.anim.slide_out_right);
+            }
+        });
+    }
+
+    private void setupToolbar(){
+        Toolbar toolbar = findViewById(R.id.toolbar_main);
+        setSupportActionBar(toolbar);
+
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Log.d(TAG, "onMenuItemClick: clicked menu item: " + item);
+                return false;
             }
         });
     }

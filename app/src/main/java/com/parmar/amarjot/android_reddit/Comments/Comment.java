@@ -1,4 +1,4 @@
-package com.parmar.amarjot.android_reddit;
+package com.parmar.amarjot.android_reddit.Comments;
 
 public class Comment {
 
