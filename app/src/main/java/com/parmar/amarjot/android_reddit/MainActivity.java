@@ -163,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(getString(R.string.post_updated), posts.get(i).getDate_updated());
 
                 startActivity(intent);
+                overridePendingTransition( R.anim.slide_in_right, R.anim.slide_out_right);
             }
         });
     }

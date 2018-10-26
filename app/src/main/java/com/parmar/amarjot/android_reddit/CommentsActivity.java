@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -97,6 +98,10 @@ class CommentsActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayHomeAsUpEnabled(true);
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24px);
     }
 
     private void init(){
@@ -146,7 +151,7 @@ class CommentsActivity extends AppCompatActivity {
                 }
                 mListView = (ListView) findViewById(R.id.commentsListView);
 
-                CommentsListAdapter adapter = new CommentsListAdapter(CommentsActivity.this, R.layout.comments_layout, mComments);
+                CommentsListAdapter adapter = new CommentsListAdapter(CommentsActivity.this, R.layout.comment_layout, mComments);
                 mListView.setAdapter(adapter);
                 mProgressBar.setVisibility(View.GONE);
                 progressText.setText("");
@@ -251,5 +256,24 @@ class CommentsActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.navigation_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                overridePendingTransition(R.anim.slide_out_left, R.anim.slide_in_left);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        // TODO Auto-generated method stub
+        super.onBackPressed();
+        this.overridePendingTransition(R.anim.slide_out_left,
+                R.anim.slide_in_left);
     }
 }
