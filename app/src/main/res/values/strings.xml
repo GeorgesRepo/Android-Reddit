@@ -9,5 +9,8 @@
     <string name="post_updated">post_updated</string>
     <string name="none">None</string>
     <string name="type_a_sub_reddit">Type a sub reddit</string>
+    <string name="SessionUsername">com.parmar.amarjot.android_reddit.Account.SessionUsername</string>
+    <string name="SessionModhash">com.parmar.amarjot.android_reddit.Account.SessionModhash</string>
+    <string name="SessionCookie">com.parmar.amarjot.android_reddit.Account.SessionCookie</string>
 
 </resources>

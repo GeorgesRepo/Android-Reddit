@@ -1,6 +1,9 @@
 package com.parmar.amarjot.android_reddit.Account;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -8,9 +11,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.ShareActionProvider;
 import android.widget.Toast;
 
+import com.parmar.amarjot.android_reddit.Comments.CommentsActivity;
 import com.parmar.amarjot.android_reddit.FeedAPI;
+import com.parmar.amarjot.android_reddit.MainActivity;
 import com.parmar.amarjot.android_reddit.R;
 import com.parmar.amarjot.android_reddit.URLS;
 
@@ -80,8 +86,25 @@ public class LoginActivity extends AppCompatActivity{
         call.enqueue(new Callback<CheckLogin>() {
             @Override
             public void onResponse(Call<CheckLogin> call, Response<CheckLogin> response) {
-                Log.d(TAG, "onResponse: Server Response: " + response.toString());
-                Log.d(TAG, "onResponse: login: " + response.toString());
+                try {
+                    Log.d(TAG, "onResponse: Server Response: " + response.toString());
+
+                    String modhash = response.body().getJson().getData().getModhash();
+                    String cookie = response.body().getJson().getData().getCookie();
+                    Log.d(TAG, "onResponse: modhash: " + modhash);
+                    Log.d(TAG, "onResponse: cookie: " + cookie);
+
+                    if (!modhash.equals("")) {
+                        setSessionParams(username, modhash, cookie);
+                        mProgressBar.setVisibility(View.GONE);
+                        Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+
+                        finish();
+                    }
+                }
+                catch (NullPointerException e) {
+                    Log.d(TAG, "onResponse: NullPointerException: " + e.getMessage());
+                }
             }
 
             @Override
@@ -90,6 +113,26 @@ public class LoginActivity extends AppCompatActivity{
                 Toast.makeText(LoginActivity.this, "An error occured", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void setSessionParams(String username, String modhash, String cookie) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        Log.d(TAG, "setSessionParams: Storing session variables:  \n" +
+                "username: " + username + "\n" +
+                "modhash: " + modhash + "\n" +
+                "cookie: " + cookie + "\n"
+        );
+
+
+        editor.putString(getString(R.string.SessionUsername), username);
+        editor.commit();
+        editor.putString(getString(R.string.SessionModhash), modhash);
+        editor.commit();
+        editor.putString(getString(R.string.SessionCookie), cookie);
+        editor.commit();
+
     }
 }
 
