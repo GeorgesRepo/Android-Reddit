@@ -11,8 +11,8 @@ public class Entry implements Serializable {
     @Element(name = "content")
     private String content;
 
-    @Element(required = false, name = "aurthor")
-    private String aurthor;
+    @Element(required = false, name = "author")
+    private Author author;
 
     @Element(name = "id")
     private String id;
@@ -23,9 +23,9 @@ public class Entry implements Serializable {
     @Element(name = "updated")
     private String updated;
 
-    public Entry(String content, String aurthor, String id, String title, String updated) {
+    public Entry(String content, Author author, String id, String title, String updated) {
         this.content = content;
-        this.aurthor = aurthor;
+        this.author = author;
         this.id = id;
         this.title = title;
         this.updated = updated;
@@ -33,7 +33,6 @@ public class Entry implements Serializable {
 
     public Entry() {
     }
-
 
     public String getContent() {
         return content;
@@ -51,12 +50,8 @@ public class Entry implements Serializable {
         this.id = id;
     }
 
-    public String getAurthor() {
-        return aurthor;
-    }
-
-    public void setAurthor(String aurthor) {
-        this.aurthor = aurthor;
+    public Author getAuthor() {
+        return author;
     }
 
     public String getTitle() {
@@ -79,7 +74,7 @@ public class Entry implements Serializable {
     public String toString() {
         return "\n \n Entry{" +
                 "content='" + content + '\'' +
-                ", aurthor='" + aurthor + '\'' +
+                ", author='" + author + '\'' +
                 ", id='" + id + '\'' +
                 ", title='" + title + '\'' +
                 ", updated='" + updated + '\'' +

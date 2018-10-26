@@ -5,15 +5,15 @@ import org.simpleframework.xml.Root;
 
 import java.io.Serializable;
 
-@Root(name = "aurthor", strict = false)
-public class Aurthor implements Serializable {
+// Used to store reddit post author's info
+@Root(name = "author", strict = false)
+public class Author implements Serializable{
 
     @Element(name = "name")
     private String name;
 
     @Element(name = "uri")
     private String uri;
-
 
     public String getName() {
         return name;
@@ -33,9 +33,9 @@ public class Aurthor implements Serializable {
 
     @Override
     public String toString() {
-        return "Aurthor{" +
+        return "Author{" +
                 "name='" + name + '\'' +
                 ", uri='" + uri + '\'' +
-                '}';
+                '}' ;
     }
 }

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="5dp"
+        app:cardElevation="10dp"
+        app:cardMaxElevation="15dp"
+        app:contentPaddingLeft="10dp"
+        app:contentPaddingRight="10dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:id="@+id/imageViewPostImage"
+                android:scaleType="centerCrop"/>
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_toRightOf="@+id/imageViewPostImage"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp">
+
+                <TextView
+                    android:id="@+id/textViewPostTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:text="textViewPostTitle"
+                    android:layout_marginTop="4dp"/>
+
+                <TextView
+                    android:id="@+id/textViewPostAuthor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:textSize="12sp"
+                    android:text="textViewPostAuthor"
+                    android:layout_below="@+id/textViewPostTitle"
+                    android:layout_marginTop="4dp"/>
+
+                <TextView
+                    android:id="@+id/textViewPostUpdated"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:textSize="12sp"
+                    android:text="textViewPostUpdated"
+                    android:layout_below="@+id/textViewPostAuthor"
+                    android:layout_marginTop="4dp"/>
+
+            </RelativeLayout>
+
+            <ProgressBar
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/ProgressBar"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"/>
+
+
+
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+
+</android.support.constraint.ConstraintLayout>
