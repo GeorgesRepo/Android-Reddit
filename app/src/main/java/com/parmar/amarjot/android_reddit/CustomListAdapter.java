@@ -80,11 +80,11 @@ public class CustomListAdapter  extends ArrayAdapter<Post> {
                 LayoutInflater inflater = LayoutInflater.from(mContext);
                 convertView = inflater.inflate(mResource, parent, false);
                 holder= new ViewHolder();
-                holder.title = convertView.findViewById(R.id.textViewPostTitle);
-                holder.thumbnailURL = convertView.findViewById(R.id.imageViewPostImage);
-                holder.author = convertView.findViewById(R.id.textViewPostAuthor);
-                holder.date_updated = convertView.findViewById(R.id.textViewPostUpdated);
-                holder.mProgressBar = convertView.findViewById(R.id.ProgressBar);
+                holder.title = convertView.findViewById(R.id.cardTitle);
+                holder.thumbnailURL = convertView.findViewById(R.id.cardImage);
+                holder.author = convertView.findViewById(R.id.cardAuthor);
+                holder.date_updated = convertView.findViewById(R.id.cardUpdated);
+                holder.mProgressBar = convertView.findViewById(R.id.cardProgressDialog);
 
                 convertView.setTag(holder);
             }
@@ -101,7 +101,8 @@ public class CustomListAdapter  extends ArrayAdapter<Post> {
             //create the imageloader object
             ImageLoader imageLoader = ImageLoader.getInstance();
 
-            int defaultImage = mContext.getResources().getIdentifier("@drawable/image_failed",null,mContext.getPackageName());
+            int defaultImage = mContext.getResources().getIdentifier("@drawable/image_failed",
+                    null,mContext.getPackageName());
 
             //create display options
             DisplayImageOptions options = new DisplayImageOptions.Builder().cacheInMemory(true)

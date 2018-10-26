@@ -31,8 +31,6 @@ public class MainActivity extends AppCompatActivity {
 
     private String currentFeed = "Art";
 
-    private Button searchButton;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -140,14 +138,14 @@ public class MainActivity extends AppCompatActivity {
                     postContent.get(lastPosition)
             ));
 
-            printPost(posts);
+            //printPost(posts);
         }
         return posts;
     }
 
     private void attachRedditFeedToList(final ArrayList<Post> posts) {
 
-        ListView listView = (ListView) findViewById(R.id.listView);
+        ListView listView = findViewById(R.id.listView);
         CustomListAdapter customListAdapter = new CustomListAdapter(MainActivity.this, R.layout.post_layout, posts);
         listView.setAdapter(customListAdapter);
 
@@ -163,6 +161,8 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(getString(R.string.post_title), posts.get(i).getTitle());
                 intent.putExtra(getString(R.string.post_author), posts.get(i).getAuthor());
                 intent.putExtra(getString(R.string.post_updated), posts.get(i).getDate_updated());
+
+                startActivity(intent);
             }
         });
     }
