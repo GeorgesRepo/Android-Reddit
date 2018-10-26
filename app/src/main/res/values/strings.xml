@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Android-Reddit</string>
+    <string name="refreshFeed">Refresh Feed</string>
 </resources>

@@ -3,6 +3,9 @@ package com.parmar.amarjot.android_reddit;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -24,6 +27,10 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String BASE_URL = "https://www.reddit.com/r/";
 
+    private String currentFeed = "Art";
+
+    private Button searchButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,8 +41,30 @@ public class MainActivity extends AppCompatActivity {
 
     private void init() {
 
+        //setupSearchButton();
         // Sets up the reddit feed on list view
         initRedditFeed();
+        setupSearchButton();
+    }
+
+
+    private void setupSearchButton() {
+
+        Button button = findViewById(R.id.buttonRefreshFeed);
+        final EditText editText = findViewById(R.id.editTextSearch);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                String temp = editText.getText().toString();
+                if (temp != null) {
+
+                    currentFeed = temp;
+                    initRedditFeed();
+                }
+            }
+        });
+
     }
 
     private void initRedditFeed() {
@@ -47,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
         FeedAPI feedAPI = retrofit.create(FeedAPI.class);
 
-        Call<Feed> call = feedAPI.getFeed();
+        Call<Feed> call = feedAPI.getFeed(currentFeed);
 
         call.enqueue(new Callback<Feed>() {
             @Override
