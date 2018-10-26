@@ -22,9 +22,4 @@
         <activity android:name=".Comments.CommentsActivity"
             tools:ignore="InnerclassSeparator" />
     </application>
-
-
-    compile 'com.android.support:cardview-v7:25.1.0'
-    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-
 </manifest>
