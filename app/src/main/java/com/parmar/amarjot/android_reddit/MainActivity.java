@@ -1,9 +1,11 @@
 package com.parmar.amarjot.android_reddit;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -41,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void init() {
 
-        //setupSearchButton();
         // Sets up the reddit feed on list view
         initRedditFeed();
         setupSearchButton();
@@ -144,11 +145,26 @@ public class MainActivity extends AppCompatActivity {
         return posts;
     }
 
-    private void attachRedditFeedToList(ArrayList<Post> posts) {
+    private void attachRedditFeedToList(final ArrayList<Post> posts) {
 
         ListView listView = (ListView) findViewById(R.id.listView);
         CustomListAdapter customListAdapter = new CustomListAdapter(MainActivity.this, R.layout.post_layout, posts);
         listView.setAdapter(customListAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.d(TAG , "onItemClick: Clicked: " + posts.get(i).toString());
+
+                Intent intent = new Intent(MainActivity.this, CommentsActivity.class);
+
+                intent.putExtra(getString(R.string.post_url), posts.get(i).getPostURL());
+                intent.putExtra(getString(R.string.post_thumbnail), posts.get(i).getThumbnailURL());
+                intent.putExtra(getString(R.string.post_title), posts.get(i).getTitle());
+                intent.putExtra(getString(R.string.post_author), posts.get(i).getAuthor());
+                intent.putExtra(getString(R.string.post_updated), posts.get(i).getDate_updated());
+            }
+        });
     }
 
     // Used to print content contained in posts
