@@ -7,4 +7,8 @@
 * Browse Feeds
 
 * Browse Comments
-* Comment
+<a href="https://media.giphy.com/media/1qfeWtgJYALZmrgZP4/giphy.gif" title="Reddit-ViewComments"/></a>
+
+* Local Cache
+
+
