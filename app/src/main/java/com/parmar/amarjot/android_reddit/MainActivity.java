@@ -69,15 +69,17 @@ public class MainActivity extends AppCompatActivity {
 
         // Sets up the reddit feed on list view
         setupToolbar();
+        pullRedditFeedOnline();
 
-        if (useLocalDB()) {
-            pullRedditFeedLocal();
-        }
-        else {
-            pullRedditFeedOnline();
-        }
+//        if (useLocalDB()) {
+//            pullRedditFeedLocal();
+//        }
+//        else {
+//            pullRedditFeedOnline();
+//        }
 
         setupSearchButton();
+        saveCurrentTime();
     }
 
 
@@ -105,6 +107,14 @@ public class MainActivity extends AppCompatActivity {
 
         return true;
     }
+
+    private void saveCurrentTime() {
+
+        Date currentDate = new Date();
+        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.SessionLastTime), MODE_PRIVATE).edit();
+        editor.putLong("time", currentDate.getTime());
+        editor.apply();
+    }
     
 
     private void setupSearchButton() {
@@ -130,8 +140,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void pullRedditFeedLocal (){
         attachRedditFeedToList(loadPosts());
-
     }
+
     private void pullRedditFeedOnline() {
 
         // Get Retrofit to fetch Reddit feed
