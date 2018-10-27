@@ -101,7 +101,7 @@ public class CustomListAdapter  extends ArrayAdapter<Post> {
             //create the imageloader object
             ImageLoader imageLoader = ImageLoader.getInstance();
 
-            int defaultImage = mContext.getResources().getIdentifier("@drawable/image_failed",
+            int defaultImage = mContext.getResources().getIdentifier(mContext.getString(R.string.default_img),
                     null,mContext.getPackageName());
 
             //create display options

@@ -1,6 +1,5 @@
 package com.parmar.amarjot.android_reddit.Account;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -11,12 +10,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.ShareActionProvider;
 import android.widget.Toast;
 
-import com.parmar.amarjot.android_reddit.Comments.CommentsActivity;
 import com.parmar.amarjot.android_reddit.FeedAPI;
-import com.parmar.amarjot.android_reddit.MainActivity;
 import com.parmar.amarjot.android_reddit.R;
 import com.parmar.amarjot.android_reddit.URLS;
 
@@ -37,18 +33,21 @@ public class LoginActivity extends AppCompatActivity{
     private EditText mUsername;
     private EditText mPassword;
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         Log.d(TAG, "onCreate: started.");
+
+        init();
+    }
+
+    private void init() {
         final Button btnLogin  = findViewById(R.id.btn_login);
         mPassword = findViewById(R.id.input_password);
         mUsername = findViewById(R.id.input_username);
         mProgressBar = findViewById(R.id.loginRequestLoadingProgressBar);
         mProgressBar.setVisibility(View.GONE);
-
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,7 +63,6 @@ public class LoginActivity extends AppCompatActivity{
                 }
             }
         });
-
     }
 
     private void login(final String username, String password) {
@@ -87,12 +85,9 @@ public class LoginActivity extends AppCompatActivity{
             @Override
             public void onResponse(Call<CheckLogin> call, Response<CheckLogin> response) {
                 try {
-                    Log.d(TAG, "onResponse: Server Response: " + response.toString());
 
                     String modhash = response.body().getJson().getData().getModhash();
                     String cookie = response.body().getJson().getData().getCookie();
-                    Log.d(TAG, "onResponse: modhash: " + modhash);
-                    Log.d(TAG, "onResponse: cookie: " + cookie);
 
                     if (!modhash.equals("")) {
                         setSessionParams(username, modhash, cookie);
@@ -115,16 +110,10 @@ public class LoginActivity extends AppCompatActivity{
         });
     }
 
+    // Saving user's creds
     private void setSessionParams(String username, String modhash, String cookie) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
         SharedPreferences.Editor editor = preferences.edit();
-
-        Log.d(TAG, "setSessionParams: Storing session variables:  \n" +
-                "username: " + username + "\n" +
-                "modhash: " + modhash + "\n" +
-                "cookie: " + cookie + "\n"
-        );
-
 
         editor.putString(getString(R.string.SessionUsername), username);
         editor.commit();
@@ -132,7 +121,6 @@ public class LoginActivity extends AppCompatActivity{
         editor.commit();
         editor.putString(getString(R.string.SessionCookie), cookie);
         editor.commit();
-
     }
 }
 

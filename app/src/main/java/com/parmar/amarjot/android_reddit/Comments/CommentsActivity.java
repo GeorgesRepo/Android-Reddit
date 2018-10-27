@@ -2,15 +2,12 @@ package com.parmar.amarjot.android_reddit.Comments;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -37,7 +34,6 @@ import com.parmar.amarjot.android_reddit.URLS;
 import com.parmar.amarjot.android_reddit.model.Feed;
 import com.parmar.amarjot.android_reddit.model.entry.Entry;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,12 +48,7 @@ public class CommentsActivity extends AppCompatActivity {
     private static final String TAG = "CommentsActivity";
     URLS urls = new URLS();
 
-    private static String postURL;
-    private static String postThumbnailURL;
-    private static String postTitle;
-    private static String postAuthor;
-    private static String postUpdated;
-    private static String postID;
+    private static String postURL, postThumbnailURL, postTitle, postAuthor, postUpdated, postID;
 
     private int defaultImage;
 
@@ -68,9 +59,8 @@ public class CommentsActivity extends AppCompatActivity {
     private ProgressBar mProgressBar;
     private TextView progressText;
 
-    private String modhash;
-    private String cookie;
-    private String username;
+    // No longer used, was being used when attempting to post comments
+    //private String modhash, cookie, username;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,18 +69,15 @@ public class CommentsActivity extends AppCompatActivity {
 
         mProgressBar = findViewById(R.id.commentsLoadingProgressBar);
         progressText = findViewById(R.id.progressText);
-        Log.d(TAG, "onCreate: Started.");
 
-        getSessionParms();
-
+        // No longer used, was being used when attempting to post comments
+        //getSessionParms();
         setupToolbar();
 
         mProgressBar.setVisibility(View.VISIBLE);
 
         setupImageLoader();
-
         initPost();
-
         init();
     }
 
@@ -196,7 +183,6 @@ public class CommentsActivity extends AppCompatActivity {
         try{
             String[] splitURL = postURL.split(urls.BASE_URL);
             currentFeed = splitURL[1];
-            Log.d(TAG, "initPost: current feed: " + currentFeed);
         }catch (ArrayIndexOutOfBoundsException e){
             Log.e(TAG, "initPost: ArrayIndexOutOfBoundsException: " + e.getMessage() );
         }
@@ -213,7 +199,7 @@ public class CommentsActivity extends AppCompatActivity {
 
     private void getUserComment(final String post_id){
         final Dialog dialog = new Dialog(CommentsActivity.this);
-        dialog.setTitle("dialog");
+        dialog.setTitle(R.string.dialog);
         dialog.setContentView(R.layout.comment_input_dialog);
 
         int width = (int)(getResources().getDisplayMetrics().widthPixels*0.95);
@@ -227,7 +213,7 @@ public class CommentsActivity extends AppCompatActivity {
         btnPostComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(CommentsActivity.this, "Comment made sucessfuly", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CommentsActivity.this, R.string.featureNotImplemented, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -285,7 +271,7 @@ public class CommentsActivity extends AppCompatActivity {
         ImageLoader.getInstance().init(config);
         // END - UNIVERSAL IMAGE LOADER SETUP
 
-        defaultImage = CommentsActivity.this.getResources().getIdentifier("@drawable/reddit_alien",null,CommentsActivity.this.getPackageName());
+        defaultImage = CommentsActivity.this.getResources().getIdentifier(getString(R.string.default_img),null,CommentsActivity.this.getPackageName());
     }
 
     @Override
@@ -307,17 +293,18 @@ public class CommentsActivity extends AppCompatActivity {
                 R.anim.slide_in_left);
     }
 
-    public void getSessionParms() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(CommentsActivity.this);
-
-        username = preferences.getString(getString(R.string.SessionUsername), "");
-        modhash = preferences.getString(getString(R.string.SessionModhash), "");
-        cookie = preferences.getString(getString(R.string.SessionCookie), "");
-
-        Log.d(TAG, "getSessionParms: Storing session variables:  \n" +
-                "username: " + username + "\n" +
-                "modhash: " + modhash + "\n" +
-                "cookie: " + cookie + "\n"
-        );
-    }
+// No longer used, was being used when attempting to post comments
+//    public void getSessionParms() {
+//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(CommentsActivity.this);
+//
+//        username = preferences.getString(getString(R.string.SessionUsername), "");
+//        modhash = preferences.getString(getString(R.string.SessionModhash), "");
+//        cookie = preferences.getString(getString(R.string.SessionCookie), "");
+//
+//        Log.d(TAG, "getSessionParms: Storing session variables:  \n" +
+//                "username: " + username + "\n" +
+//                "modhash: " + modhash + "\n" +
+//                "cookie: " + cookie + "\n"
+//        );
+//    }
 }
