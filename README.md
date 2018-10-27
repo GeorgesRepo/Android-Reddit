@@ -1,10 +1,11 @@
 # Android Reddit
 
 * Login
-* Change Password
 * Logout
 
+
 * Browse Feeds
+<a href="https://media.giphy.com/media/1qfeWtgJYALZmrgZP4/giphy.gif" title="Reddit-Browse Feeds"/></a>
 
 * Browse Comments
 <a href="https://media.giphy.com/media/1qfeWtgJYALZmrgZP4/giphy.gif" title="Reddit-ViewComments"/></a>
