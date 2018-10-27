@@ -233,11 +233,12 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG , "savePosts: Created");
         SQLiteDatabaseHelper feed = new SQLiteDatabaseHelper(this,"recentFeed");
 
+        feed.clearDatabase();
+
         for (int i = 0; i < posts.size(); i++) {
             Log.d(TAG , "savePosts: Saving: " + posts.get(i).getId());
             feed.addPost(posts.get(i));
         }
-
     }
 
     // Get cached local feed and return it
