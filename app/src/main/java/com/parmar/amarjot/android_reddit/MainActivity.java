@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, "init: displaying online list");
             pullRedditFeedOnline();
         }
-
+        setSearchTextBox(currentFeed);
         setupSearchButton();
     }
 
@@ -361,6 +361,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void setSearchTextBox (String feed) {
+        final EditText editText = findViewById(R.id.editTextSearch);
+        editText.setText(feed);
     }
 
     private void setLastSearchedSubreddit() {
