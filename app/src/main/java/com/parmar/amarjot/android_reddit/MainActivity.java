@@ -1,6 +1,8 @@
 package com.parmar.amarjot.android_reddit;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -9,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -44,6 +45,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         init();
+    }
+
+    // Updates menu item when user signs in
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        setupToolbar();
     }
 
     private void init() {
@@ -190,10 +198,20 @@ public class MainActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 Log.d(TAG, "onMenuItemClick: clicked menu item: " + item);
 
+
                 switch(item.getItemId()){
                     case R.id.navLogin:
                         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                         startActivity(intent);
+                        break;
+                    case R.id.navLogout:
+                        removeSession();
+                        setupToolbar();
+                        Toast.makeText(MainActivity.this, "Logged out successfully", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.navChangePassword:
+                        Toast.makeText(MainActivity.this, "To be implemented", Toast.LENGTH_SHORT).show();
+                        break;
                 }
 
                 return false;
@@ -203,7 +221,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.login_menu, menu);
+        if (sessionExist()) {
+            getMenuInflater().inflate(R.menu.logined_in_menu, menu);
+        }
+        else {
+            getMenuInflater().inflate(R.menu.login_menu, menu);
+        }
+
         return true;
     }
 
@@ -218,5 +242,35 @@ public class MainActivity extends AppCompatActivity {
                     "updated: " + posts.get(j).getDate_updated() + "\n " +
                     "id: " + posts.get(j).getId() + "\n ");
         }
+    }
+
+    public Boolean sessionExist() {
+
+        String modhash;
+        String cookie;
+        String username;
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+
+        username = preferences.getString(getString(R.string.SessionUsername), "");
+        modhash = preferences.getString(getString(R.string.SessionModhash), "");
+        cookie = preferences.getString(getString(R.string.SessionCookie), "");
+
+        Log.d(TAG, "getSessionParms: Storing session variables:  \n" +
+                "username: " + username + "\n" +
+                "modhash: " + modhash + "\n" +
+                "cookie: " + cookie + "\n"
+        );
+
+        if (modhash.equals("")) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private void removeSession() {
+        PreferenceManager.getDefaultSharedPreferences(getBaseContext()).
+                edit().clear().apply();
     }
 }

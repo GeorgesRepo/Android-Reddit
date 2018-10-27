@@ -59,8 +59,6 @@ public class CommentsListAdapter extends ArrayAdapter<Comment> {
         String date_updated = getItem(position).getUpdated();
 
         try{
-
-
             //create the view result for showing the animation
             final View result;
 

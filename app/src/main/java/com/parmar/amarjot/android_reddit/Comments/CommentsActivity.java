@@ -15,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -31,8 +30,6 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-import com.parmar.amarjot.android_reddit.Account.CheckLogin;
-import com.parmar.amarjot.android_reddit.Account.LoginActivity;
 import com.parmar.amarjot.android_reddit.ExtractXML;
 import com.parmar.amarjot.android_reddit.FeedAPI;
 import com.parmar.amarjot.android_reddit.R;
@@ -42,14 +39,12 @@ import com.parmar.amarjot.android_reddit.model.entry.Entry;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
 public class CommentsActivity extends AppCompatActivity {
@@ -99,12 +94,6 @@ public class CommentsActivity extends AppCompatActivity {
         init();
     }
 
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        getSessionParms();
-    }
-
     private void setupToolbar(){
         Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
@@ -136,7 +125,6 @@ public class CommentsActivity extends AppCompatActivity {
                     ExtractXML extract = new ExtractXML(entries.get(i).getContent(), "<div class=\"md\"><p>","</p>");
                     List<String> commentDetails = extract.start();
 
-
                     try{
                         Comment comment = new Comment(commentDetails.get(0),
                                 entries.get(i).getAuthor().getName(),
@@ -159,7 +147,7 @@ public class CommentsActivity extends AppCompatActivity {
                         Log.e(TAG, "onResponse: NullPointerException: " + e.getMessage() );
                     }
                 }
-                mListView = (ListView) findViewById(R.id.commentsListView);
+                mListView = findViewById(R.id.commentsListView);
 
                 CommentsListAdapter adapter = new CommentsListAdapter(CommentsActivity.this, R.layout.comment_layout, mComments);
                 mListView.setAdapter(adapter);
@@ -234,68 +222,12 @@ public class CommentsActivity extends AppCompatActivity {
         dialog.getWindow().setLayout(width, height);
         dialog.show();
 
-        Button btnPostComment = (Button) dialog.findViewById(R.id.btnPostComment);
-        final EditText comment = (EditText) dialog.findViewById(R.id.dialogComment);
+        Button btnPostComment = dialog.findViewById(R.id.btnPostComment);
 
         btnPostComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: Attempting to post comment.");
-
-                //post comment stuff for retrofit
-
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(urls.COMMENT_URL)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
-
-                FeedAPI feedAPI = retrofit.create(FeedAPI.class);
-
-                // Make header
-                HashMap<String, String> headerMap = new HashMap<>();
-                headerMap.put("User-Agent", username);
-                headerMap.put("X-Modhash", modhash);
-                headerMap.put("cookie", "reddit_session=" + cookie);
-
-                Log.d(TAG, "btnPostComment:  \n" +
-                        "username: " + username + "\n" +
-                        "modhash: " + modhash + "\n" +
-                        "cookie: " + cookie + "\n" +
-                        "postID: " + post_id + "\n"
-                );
-
-                // Make sign in request
-                Call<CheckComment> call = feedAPI.submitComment( headerMap, "comment", post_id, "This is a comment");
-
-                call.enqueue(new Callback<CheckComment>() {
-                    @Override
-                    public void onResponse(Call<CheckComment> call, Response<CheckComment> response) {
-                        try {
-                            Log.d(TAG, "onResponse: Server Response: " + response.toString());
-
-                            String postSuccess = response.body().getSuccess();
-
-                            dialog.dismiss();
-                            Toast.makeText(CommentsActivity.this, "Comment made sucessfuly", Toast.LENGTH_SHORT).show();
-//                            if (postSuccess.equals("true")) {
-//                                dialog.dismiss();
-//                                Toast.makeText(CommentsActivity.this, "Comment made sucessfuly", Toast.LENGTH_SHORT).show();
-//                            }
-//                            else {
-//                                Toast.makeText(CommentsActivity.this, "An Error Occured. Did you sign in?", Toast.LENGTH_SHORT).show();
-//                            }
-
-                        }
-                        catch (NullPointerException e) {
-                            Log.d(TAG, "onResponse: NullPointerException: " + e.getMessage());
-                        }
-                    }
-                    @Override
-                    public void onFailure(Call<CheckComment> call, Throwable t) {
-                        Log.e(TAG, "onFailure: unable to comment: " + t.getMessage());
-                        Toast.makeText(CommentsActivity.this, "An error occured", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                Toast.makeText(CommentsActivity.this, "Comment made sucessfuly", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -356,7 +288,6 @@ public class CommentsActivity extends AppCompatActivity {
         defaultImage = CommentsActivity.this.getResources().getIdentifier("@drawable/reddit_alien",null,CommentsActivity.this.getPackageName());
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -375,7 +306,6 @@ public class CommentsActivity extends AppCompatActivity {
         this.overridePendingTransition(R.anim.slide_out_left,
                 R.anim.slide_in_left);
     }
-
 
     public void getSessionParms() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(CommentsActivity.this);
