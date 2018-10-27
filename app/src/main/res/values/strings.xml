@@ -20,5 +20,6 @@
     <string name="default_img">\@drawable/redditicon</string>
     <string name="loginUnSuccess">Login Unsuccessful</string>
     <string name="loginSuccess">Login Successful</string>
+    <string name="searchText">searchText</string>
 
 </resources>

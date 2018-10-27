@@ -58,7 +58,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
-        currentFeed = getString(R.string.Default_feed);
+
+        currentFeed = getLastSearchedSubreddit();
         setupToolbar();
 
         // if local cached reddit feed is recent enough, use that
@@ -153,50 +154,59 @@ public class MainActivity extends AppCompatActivity {
 
     //  Extract usefull information and return it
     private ArrayList<Post> extractRedditFeed(Response<Feed>  response) {
-        List<Entry> entries = response.body().getEntries();
 
         // Used to store content that is displayed in list
         ArrayList<Post> posts = new ArrayList<Post>();
 
-        // For each entry, extract and add it to posts array
-        for (int i = 0; i< entries.size(); i++){
+        try {
+            List<Entry> entries = response.body().getEntries();
 
-            // Extract href tag
-            ExtractXML extractXML1 = new ExtractXML(entries.get(i).getContent(), "<a href=");
-            List<String> postContent = extractXML1.start();
+            // For each entry, extract and add it to posts array
+            for (int i = 0; i< entries.size(); i++){
 
-            // Extract image tag
-            ExtractXML extractXML2 = new ExtractXML(entries.get(i).getContent(), "<img src=");
-            try{
-                // if their is a img thumbnail it will only have one, hence 0 index
-                postContent.add(extractXML2.start().get(0));
+                // Extract href tag
+                ExtractXML extractXML1 = new ExtractXML(entries.get(i).getContent(), "<a href=");
+                List<String> postContent = extractXML1.start();
+
+                // Extract image tag
+                ExtractXML extractXML2 = new ExtractXML(entries.get(i).getContent(), "<img src=");
+                try{
+                    // if their is a img thumbnail it will only have one, hence 0 index
+                    postContent.add(extractXML2.start().get(0));
+                }
+                catch (NullPointerException e){
+                    postContent.add(null);
+                    Log.e(TAG, "onResponse: NullPointerException(thumbnail):" + e.getMessage() );
+                }
+                catch (IndexOutOfBoundsException e){
+                    postContent.add(null);
+                    Log.e(TAG, "onResponse: IndexOutOfBoundsException(thumbnail):" + e.getMessage() );
+                }
+
+
+                int lastPosition = postContent.size() - 1;
+
+                // Add data to post (each post used for single card in list)
+                posts.add(new Post(
+                        entries.get(i).getTitle(),
+                        entries.get(i).getAuthor().getName(),
+                        entries.get(i).getUpdated(),
+                        // extracted href
+                        postContent.get(0),
+                        // extracted img thumbnail
+                        postContent.get(lastPosition),
+                        entries.get(i).getId()
+                ));
+
+                //printPost(posts);
             }
-            catch (NullPointerException e){
-                postContent.add(null);
-                Log.e(TAG, "onResponse: NullPointerException(thumbnail):" + e.getMessage() );
-            }
-            catch (IndexOutOfBoundsException e){
-                postContent.add(null);
-                Log.e(TAG, "onResponse: IndexOutOfBoundsException(thumbnail):" + e.getMessage() );
-            }
-
-
-            int lastPosition = postContent.size() - 1;
-
-            // Add data to post (each post used for single card in list)
-            posts.add(new Post(
-                    entries.get(i).getTitle(),
-                    entries.get(i).getAuthor().getName(),
-                    entries.get(i).getUpdated(),
-                    // extracted href
-                    postContent.get(0),
-                    // extracted img thumbnail
-                    postContent.get(lastPosition),
-                    entries.get(i).getId()
-            ));
-
-            //printPost(posts);
+            return posts;
         }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+
         return posts;
     }
 
@@ -346,10 +356,31 @@ public class MainActivity extends AppCompatActivity {
                     Log.e(TAG, "setupSearchButton: user searched: " + temp);
                     currentFeed = temp;
                     pullRedditFeedOnline();
+                    setLastSearchedSubreddit();
                 }
             }
         });
 
+    }
+
+    private void setLastSearchedSubreddit() {
+
+        Log.e(TAG, "setLastSearchedSubreddit: creared" );
+        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.searchText), MODE_PRIVATE).edit();
+        editor.putString("subreddit", currentFeed);
+        editor.apply();
+    }
+
+    private String getLastSearchedSubreddit() {
+
+        SharedPreferences prefs = getSharedPreferences(getString(R.string.searchText), MODE_PRIVATE);
+        String lastSearchedSubreddit = prefs.getString("subreddit", ""); //"" is the default value.
+
+        if (lastSearchedSubreddit.equals("")) {
+            return getString(R.string.searchText);
+        }
+
+        return lastSearchedSubreddit;
     }
 
     // Used to print content contained in posts, left here for debugging

@@ -16,11 +16,11 @@ public interface FeedAPI {
 
     String BASE_URL = "https://www.reddit.com/r/";
 
-
+    // Used to get subbreddits
     @GET(BASE_URL + "{feed_name}/.rss")
     Call<Feed> getFeed(@Path("feed_name") String feed_name);
 
-
+    // Used to sign in
     @POST("{user}")
     Call<CheckLogin> signIn(
             // Making up the url to make request with
