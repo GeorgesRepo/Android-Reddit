@@ -1,5 +1,6 @@
 package com.parmar.amarjot.android_reddit;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -22,7 +23,11 @@ import com.parmar.amarjot.android_reddit.Comments.CommentsActivity;
 import com.parmar.amarjot.android_reddit.model.Feed;
 import com.parmar.amarjot.android_reddit.model.entry.Entry;
 
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -46,7 +51,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        init();
+        try {
+            init();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     // Updates menu item when user signs in
@@ -56,14 +65,47 @@ public class MainActivity extends AppCompatActivity {
         setupToolbar();
     }
 
-    private void init() {
+    private void init() throws ParseException {
 
         // Sets up the reddit feed on list view
         setupToolbar();
-        initRedditFeed();
+
+        if (useLocalDB()) {
+            pullRedditFeedLocal();
+        }
+        else {
+            pullRedditFeedOnline();
+        }
+
         setupSearchButton();
     }
 
+
+    private boolean useLocalDB () throws ParseException {
+
+        // TODO Get l
+        String toyBornTime = "2018-10-27 12:56:50";
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss");
+        Date oldDate = dateFormat.parse(toyBornTime);
+        System.out.println(oldDate);
+
+        Date currentDate = new Date();
+
+        long diff = currentDate.getTime() - oldDate.getTime();
+        long seconds = diff / 1000;
+        long minutes = seconds / 60;
+        long hours = minutes / 60;
+        long days = hours / 24;
+
+        long totalMinutes = minutes + (hours * 60);
+        if (oldDate.before(currentDate) & totalMinutes > 5) {
+            return false;
+        }
+
+        return true;
+    }
+    
 
     private void setupSearchButton() {
 
@@ -79,14 +121,18 @@ public class MainActivity extends AppCompatActivity {
                 if (!temp.equals("")){
                     Log.e(TAG, "setupSearchButton: user searched: " + temp);
                     currentFeed = temp;
-                    initRedditFeed();
+                    pullRedditFeedOnline();
                 }
             }
         });
 
     }
 
-    private void initRedditFeed() {
+    private void pullRedditFeedLocal (){
+        attachRedditFeedToList(loadPosts());
+
+    }
+    private void pullRedditFeedOnline() {
 
         // Get Retrofit to fetch Reddit feed
         Retrofit retrofit = new Retrofit.Builder()
@@ -167,9 +213,6 @@ public class MainActivity extends AppCompatActivity {
     // Attaches Posts to list and adds onClick listner
     private void attachRedditFeedToList(final ArrayList<Post> posts) {
 
-        //savePosts(posts);
-        final ArrayList<Post> localPosts = loadPosts();
-
         ListView listView = findViewById(R.id.listView);
         CustomListAdapter customListAdapter = new CustomListAdapter(MainActivity.this, R.layout.post_layout, posts);
         listView.setAdapter(customListAdapter);
@@ -177,43 +220,21 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d(TAG , "onItemClick: Clicked: " + localPosts.get(i).toString());
+                Log.d(TAG , "onItemClick: Clicked: " + posts.get(i).toString());
 
                 Intent intent = new Intent(MainActivity.this, CommentsActivity.class);
 
-                intent.putExtra(getString(R.string.post_url), localPosts.get(i).getPostURL());
-                intent.putExtra(getString(R.string.post_thumbnail), localPosts.get(i).getThumbnailURL());
-                intent.putExtra(getString(R.string.post_title), localPosts.get(i).getTitle());
-                intent.putExtra(getString(R.string.post_author), localPosts.get(i).getAuthor());
-                intent.putExtra(getString(R.string.post_updated), localPosts.get(i).getDate_updated());
-                intent.putExtra(getString(R.string.post_id), localPosts.get(i).getId());
+                intent.putExtra(getString(R.string.post_url), posts.get(i).getPostURL());
+                intent.putExtra(getString(R.string.post_thumbnail), posts.get(i).getThumbnailURL());
+                intent.putExtra(getString(R.string.post_title), posts.get(i).getTitle());
+                intent.putExtra(getString(R.string.post_author), posts.get(i).getAuthor());
+                intent.putExtra(getString(R.string.post_updated), posts.get(i).getDate_updated());
+                intent.putExtra(getString(R.string.post_id), posts.get(i).getId());
 
                 startActivity(intent);
                 overridePendingTransition( R.anim.slide_in_right, R.anim.slide_out_right);
             }
         });
-//        ListView listView = findViewById(R.id.listView);
-//        CustomListAdapter customListAdapter = new CustomListAdapter(MainActivity.this, R.layout.post_layout, posts);
-//        listView.setAdapter(customListAdapter);
-//
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                Log.d(TAG , "onItemClick: Clicked: " + posts.get(i).toString());
-//
-//                Intent intent = new Intent(MainActivity.this, CommentsActivity.class);
-//
-//                intent.putExtra(getString(R.string.post_url), posts.get(i).getPostURL());
-//                intent.putExtra(getString(R.string.post_thumbnail), posts.get(i).getThumbnailURL());
-//                intent.putExtra(getString(R.string.post_title), posts.get(i).getTitle());
-//                intent.putExtra(getString(R.string.post_author), posts.get(i).getAuthor());
-//                intent.putExtra(getString(R.string.post_updated), posts.get(i).getDate_updated());
-//                intent.putExtra(getString(R.string.post_id), posts.get(i).getId());
-//
-//                startActivity(intent);
-//                overridePendingTransition( R.anim.slide_in_right, R.anim.slide_out_right);
-//            }
-//        });
     }
 
     private void setupToolbar(){
