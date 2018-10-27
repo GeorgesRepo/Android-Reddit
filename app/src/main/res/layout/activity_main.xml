@@ -25,7 +25,9 @@
         android:id="@+id/linearLayoutSearch"
         android:orientation="horizontal"
         android:paddingTop="50dp"
-        android:weightSum="100">
+        android:weightSum="100"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
 
         <EditText
@@ -41,7 +43,7 @@
         <ImageButton
             android:id="@+id/buttonRefreshFeed"
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="42dp"
             android:layout_gravity="center"
             android:layout_weight="10"
             android:gravity="center"
