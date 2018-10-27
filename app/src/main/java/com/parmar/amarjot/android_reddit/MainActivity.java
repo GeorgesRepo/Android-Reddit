@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         // if local cached reddit feed is recent enough, use that
         if (useLocalDB()) {
             Log.e(TAG, "init: displaying local list");
-            //pullRedditFeedOnline();
+            pullRedditFeedOnline();
             pullRedditFeedLocal();
         }
         // otherwise fetch the latest one and cache it
@@ -377,7 +377,7 @@ public class MainActivity extends AppCompatActivity {
         String lastSearchedSubreddit = prefs.getString("subreddit", ""); //"" is the default value.
 
         if (lastSearchedSubreddit.equals("")) {
-            return getString(R.string.searchText);
+            return getString(R.string.Default_feed);
         }
 
         return lastSearchedSubreddit;
