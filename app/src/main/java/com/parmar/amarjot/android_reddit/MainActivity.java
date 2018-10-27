@@ -1,6 +1,5 @@
 package com.parmar.amarjot.android_reddit;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -23,9 +22,6 @@ import com.parmar.amarjot.android_reddit.Comments.CommentsActivity;
 import com.parmar.amarjot.android_reddit.model.Feed;
 import com.parmar.amarjot.android_reddit.model.entry.Entry;
 
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,8 +39,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String BASE_URL = "https://www.reddit.com/r/";
 
-    private String currentFeed = "Art";
-
+    // Default reddit subreddit feed
+    private String currentFeed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,15 +58,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
-
-        // Sets up the reddit feed on list view
+        currentFeed = getString(R.string.Default_feed);
         setupToolbar();
-        pullRedditFeedOnline();
 
+        // if local cached reddit feed is recent enough, use that
         if (useLocalDB()) {
             Log.e(TAG, "init: displaying local list");
+            //pullRedditFeedOnline();
             pullRedditFeedLocal();
         }
+        // otherwise fetch the latest one and cache it
         else {
             Log.e(TAG, "init: displaying online list");
             pullRedditFeedOnline();
@@ -79,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         setupSearchButton();
     }
 
-
+    // returns true if local cache is recently updated
     private boolean useLocalDB () {
 
         SharedPreferences prefs = getSharedPreferences(getString(R.string.SessionLastTime), MODE_PRIVATE);
@@ -94,55 +91,34 @@ public class MainActivity extends AppCompatActivity {
             long seconds = diff / 1000;
             long minutes = seconds / 60;
             long hours = minutes / 60;
-            long days = hours / 24;
 
             long totalMinutes = minutes + (hours * 60);
 
-            Log.e(TAG, "useLocalDB: total min: " + totalMinutes );
-
             if ( totalMinutes > 1) {
-                saveCurrentTime();
                 return false;
             }
+            else {
+                return true;
+            }
         }
-
-        return true;
+        return false;
     }
 
+    // saves current time, used to determine if local cache is recent
     private void saveCurrentTime() {
-
+        Log.e(TAG, "saveCurrentTime: creared" );
         Date currentDate = new Date();
         SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.SessionLastTime), MODE_PRIVATE).edit();
         editor.putLong("time", currentDate.getTime());
         editor.apply();
     }
-    
 
-    private void setupSearchButton() {
-
-        ImageButton button = findViewById(R.id.buttonRefreshFeed);
-        button.setBackground(getDrawable(R.drawable.ic_baseline_refresh_24px));
-
-        final EditText editText = findViewById(R.id.editTextSearch);
-
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-
-                String temp = editText.getText().toString();
-                if (!temp.equals("")){
-                    Log.e(TAG, "setupSearchButton: user searched: " + temp);
-                    currentFeed = temp;
-                    pullRedditFeedOnline();
-                }
-            }
-        });
-
-    }
-
+    // Pulls cached reddit feed from local DB
     private void pullRedditFeedLocal (){
         attachRedditFeedToList(loadPosts());
     }
 
+    // Pulls reddit feed from .rss using retro fit
     private void pullRedditFeedOnline() {
 
         // Get Retrofit to fetch Reddit feed
@@ -161,6 +137,9 @@ public class MainActivity extends AppCompatActivity {
                 // Extract reddit feed into posts & display in list
                 ArrayList<Post> posts = extractRedditFeed(response);
                 attachRedditFeedToList(posts);
+                // Caching reddit feed & recording what time these were fetched
+                savePosts(posts);
+                saveCurrentTime();
             }
 
             @Override
@@ -172,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // Get a feed from reddit API, extract usefull information and return it
+    //  Extract usefull information and return it
     private ArrayList<Post> extractRedditFeed(Response<Feed>  response) {
         List<Entry> entries = response.body().getEntries();
 
@@ -248,6 +227,67 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // Saves reddit feed into local db
+    private void savePosts(ArrayList<Post> posts) {
+
+        Log.d(TAG , "savePosts: Created");
+        SQLiteDatabaseHelper feed = new SQLiteDatabaseHelper(this,"recentFeed");
+
+        for (int i = 0; i < posts.size(); i++) {
+            Log.d(TAG , "savePosts: Saving: " + posts.get(i).getId());
+            feed.addPost(posts.get(i));
+        }
+
+    }
+
+    // Get cached local feed and return it
+    private ArrayList<Post> loadPosts() {
+        Log.d(TAG , "loadPosts: Created");
+        ArrayList<Post> posts = new  ArrayList<>();
+
+        SQLiteDatabaseHelper feed = new SQLiteDatabaseHelper(this,"recentFeed");
+
+        Cursor loadedPosts = feed.getPosts();
+        while (loadedPosts.moveToNext()) {
+
+            String title = loadedPosts.getString(1);
+            String author = loadedPosts.getString(2);
+            String date_updated = loadedPosts.getString(3);
+            String postURL = loadedPosts.getString(4);
+            String thumbnailURL = loadedPosts.getString(5);
+            String id = loadedPosts.getString(6);
+
+
+            Post newPost = new Post(title, author, date_updated, postURL, thumbnailURL, id);
+            posts.add(newPost);
+        }
+
+        return posts;
+    }
+
+    // Checks if user if currently logged in
+    public Boolean sessionExist() {
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+
+        String username = preferences.getString(getString(R.string.SessionUsername), "");
+        String modhash = preferences.getString(getString(R.string.SessionModhash), "");
+        String cookie = preferences.getString(getString(R.string.SessionCookie), "");
+
+        if (username.equals("") & modhash.equals("") & cookie.equals("")) {
+            return false;
+        }
+
+        return true;
+    }
+
+    // Deletes users credentials, essentially logging them out.
+    private void removeSession() {
+        PreferenceManager.getDefaultSharedPreferences(getBaseContext()).
+                edit().clear().apply();
+    }
+
+    // Sets up tool bar, & menu depending on if user is logged in or not
     private void setupToolbar(){
         Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
@@ -290,7 +330,28 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    // Used to print content contained in posts
+    private void setupSearchButton() {
+
+        ImageButton button = findViewById(R.id.buttonRefreshFeed);
+        button.setBackground(getDrawable(R.drawable.ic_baseline_refresh_24px));
+
+        final EditText editText = findViewById(R.id.editTextSearch);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                String temp = editText.getText().toString();
+                if (!temp.equals("")){
+                    Log.e(TAG, "setupSearchButton: user searched: " + temp);
+                    currentFeed = temp;
+                    pullRedditFeedOnline();
+                }
+            }
+        });
+
+    }
+
+    // Used to print content contained in posts, left here for debugging
     private void printPost(ArrayList<Post> posts) {
         for(int j = 0; j<posts.size(); j++){
             Log.d(TAG, "onResponse: \n " +
@@ -301,71 +362,5 @@ public class MainActivity extends AppCompatActivity {
                     "updated: " + posts.get(j).getDate_updated() + "\n " +
                     "id: " + posts.get(j).getId() + "\n ");
         }
-    }
-
-    public Boolean sessionExist() {
-
-        String modhash;
-        String cookie;
-        String username;
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-
-        username = preferences.getString(getString(R.string.SessionUsername), "");
-        modhash = preferences.getString(getString(R.string.SessionModhash), "");
-        cookie = preferences.getString(getString(R.string.SessionCookie), "");
-
-        Log.d(TAG, "getSessionParms: Storing session variables:  \n" +
-                "username: " + username + "\n" +
-                "modhash: " + modhash + "\n" +
-                "cookie: " + cookie + "\n"
-        );
-
-        if (modhash.equals("")) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private void removeSession() {
-        PreferenceManager.getDefaultSharedPreferences(getBaseContext()).
-                edit().clear().apply();
-    }
-
-    private void savePosts(ArrayList<Post> posts) {
-
-        Log.d(TAG , "savePosts: Created");
-        SQLiteDatabaseHelper feed = new SQLiteDatabaseHelper(this,"recentFeed");
-
-        for (int i = 0; i < posts.size(); i++) {
-            Log.d(TAG , "savePosts: Saving: " + posts.get(i).getId());
-            feed.addPost(posts.get(i));
-        }
-
-    }
-
-    private ArrayList<Post> loadPosts() {
-        Log.d(TAG , "loadPosts: Created");
-        ArrayList<Post> posts = new  ArrayList<>();
-
-        SQLiteDatabaseHelper feed = new SQLiteDatabaseHelper(this,"recentFeed");
-
-        Cursor loadedPosts = feed.getPosts();
-        while (loadedPosts.moveToNext()) {
-
-            String title = loadedPosts.getString(1);
-            String author = loadedPosts.getString(2);
-            String date_updated = loadedPosts.getString(3);
-            String postURL = loadedPosts.getString(4);
-            String thumbnailURL = loadedPosts.getString(5);
-            String id = loadedPosts.getString(6);
-
-
-            Post newPost = new Post(title, author, date_updated, postURL, thumbnailURL, id);
-            posts.add(newPost);
-        }
-
-        return posts;
     }
 }

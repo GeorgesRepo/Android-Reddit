@@ -14,5 +14,6 @@
     <string name="SessionCookie">com.parmar.amarjot.android_reddit.Account.SessionCookie</string>
     <string name="post_id">post_id</string>
     <string name="SessionLastTime">SessionLastTime</string>
+    <string name="Default_feed">Canada</string>
 
 </resources>
