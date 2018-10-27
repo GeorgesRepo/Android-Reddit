@@ -7,13 +7,23 @@ public class Post {
     private String date_updated;
     private String postURL;
     private String thumbnailURL;
+    private String id;
 
-    public Post(String title, String author, String date_updated, String postURL, String thumbnailURL) {
+    public Post(String title, String author, String date_updated, String postURL, String thumbnailURL, String id) {
         this.title = title;
         this.author = author;
         this.date_updated = date_updated;
         this.postURL = postURL;
         this.thumbnailURL = thumbnailURL;
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTitle() {

@@ -1,8 +1,11 @@
 package com.parmar.amarjot.android_reddit.Comments;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +13,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -54,6 +59,7 @@ public class CommentsActivity extends AppCompatActivity {
     private static String postTitle;
     private static String postAuthor;
     private static String postUpdated;
+    private static String postID;
 
     private int defaultImage;
 
@@ -64,6 +70,9 @@ public class CommentsActivity extends AppCompatActivity {
     private ProgressBar mProgressBar;
     private TextView progressText;
 
+    private String modhash;
+    private String cookie;
+    private String username;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,6 +83,8 @@ public class CommentsActivity extends AppCompatActivity {
         progressText = findViewById(R.id.progressText);
         Log.d(TAG, "onCreate: Started.");
 
+        getSessionParms();
+
         setupToolbar();
 
         mProgressBar.setVisibility(View.VISIBLE);
@@ -83,6 +94,12 @@ public class CommentsActivity extends AppCompatActivity {
         initPost();
 
         init();
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        getSessionParms();
     }
 
     private void setupToolbar(){
@@ -143,6 +160,14 @@ public class CommentsActivity extends AppCompatActivity {
 
                 CommentsListAdapter adapter = new CommentsListAdapter(CommentsActivity.this, R.layout.comment_layout, mComments);
                 mListView.setAdapter(adapter);
+
+                mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        getUserComment(postID);
+                    }
+                });
+
                 mProgressBar.setVisibility(View.GONE);
                 progressText.setText("");
             }
@@ -162,6 +187,7 @@ public class CommentsActivity extends AppCompatActivity {
         postTitle = incomingIntent.getStringExtra(getString(R.string.post_title));
         postAuthor = incomingIntent.getStringExtra(getString(R.string.post_author));
         postUpdated = incomingIntent.getStringExtra(getString(R.string.post_updated));
+        postID = incomingIntent.getStringExtra(getString(R.string.post_id));
 
         TextView title = findViewById(R.id.postTitle);
         TextView author = findViewById(R.id.postAuthor);
@@ -184,6 +210,38 @@ public class CommentsActivity extends AppCompatActivity {
             Log.e(TAG, "initPost: ArrayIndexOutOfBoundsException: " + e.getMessage() );
         }
 
+        btnReply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: reply.");
+                getUserComment(postID);
+            }
+        });
+
+    }
+
+    private void getUserComment(String post_id){
+        final Dialog dialog = new Dialog(CommentsActivity.this);
+        dialog.setTitle("dialog");
+        dialog.setContentView(R.layout.comment_input_dialog);
+
+        int width = (int)(getResources().getDisplayMetrics().widthPixels*0.95);
+        int height = (int)(getResources().getDisplayMetrics().heightPixels*0.6);
+
+        dialog.getWindow().setLayout(width, height);
+        dialog.show();
+
+        Button btnPostComment = (Button) dialog.findViewById(R.id.btnPostComment);
+        final EditText comment = (EditText) dialog.findViewById(R.id.dialogComment);
+
+        btnPostComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: Attempting to post comment.");
+
+                //post comment stuff for retrofit
+            }
+        });
     }
 
     private void displayImage(String imageURL, ImageView imageView, final ProgressBar progressBar){
@@ -260,5 +318,20 @@ public class CommentsActivity extends AppCompatActivity {
         super.onBackPressed();
         this.overridePendingTransition(R.anim.slide_out_left,
                 R.anim.slide_in_left);
+    }
+
+
+    public void getSessionParms() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(CommentsActivity.this);
+
+        username = preferences.getString(getString(R.string.SessionUsername), "");
+        modhash = preferences.getString(getString(R.string.SessionModhash), "");
+        cookie = preferences.getString(getString(R.string.SessionCookie), "");
+
+        Log.d(TAG, "getSessionParms: Storing session variables:  \n" +
+                "username: " + username + "\n" +
+                "modhash: " + modhash + "\n" +
+                "cookie: " + cookie + "\n"
+        );
     }
 }

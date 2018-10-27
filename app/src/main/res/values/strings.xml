@@ -12,5 +12,6 @@
     <string name="SessionUsername">com.parmar.amarjot.android_reddit.Account.SessionUsername</string>
     <string name="SessionModhash">com.parmar.amarjot.android_reddit.Account.SessionModhash</string>
     <string name="SessionCookie">com.parmar.amarjot.android_reddit.Account.SessionCookie</string>
+    <string name="post_id">post_id</string>
 
 </resources>

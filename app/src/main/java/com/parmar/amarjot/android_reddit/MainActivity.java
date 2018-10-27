@@ -145,7 +145,8 @@ public class MainActivity extends AppCompatActivity {
                     // extracted href
                     postContent.get(0),
                     // extracted img thumbnail
-                    postContent.get(lastPosition)
+                    postContent.get(lastPosition),
+                    entries.get(i).getId()
             ));
 
             //printPost(posts);
@@ -172,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(getString(R.string.post_title), posts.get(i).getTitle());
                 intent.putExtra(getString(R.string.post_author), posts.get(i).getAuthor());
                 intent.putExtra(getString(R.string.post_updated), posts.get(i).getDate_updated());
+                intent.putExtra(getString(R.string.post_id), posts.get(i).getId());
 
                 startActivity(intent);
                 overridePendingTransition( R.anim.slide_in_right, R.anim.slide_out_right);
@@ -213,7 +215,8 @@ public class MainActivity extends AppCompatActivity {
                     "ThumbnailURL: " + posts.get(j).getThumbnailURL() + "\n " +
                     "Title: " + posts.get(j).getTitle() + "\n " +
                     "Author: " + posts.get(j).getAuthor() + "\n " +
-                    "updated: " + posts.get(j).getDate_updated() + "\n ");
+                    "updated: " + posts.get(j).getDate_updated() + "\n " +
+                    "id: " + posts.get(j).getId() + "\n ");
         }
     }
 }
