@@ -24,7 +24,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-
 public class LoginActivity extends AppCompatActivity{
 
     private static final String TAG = "LoginActivity";
@@ -92,9 +91,13 @@ public class LoginActivity extends AppCompatActivity{
                     if (!modhash.equals("")) {
                         setSessionParams(username, modhash, cookie);
                         mProgressBar.setVisibility(View.GONE);
-                        Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, R.string.loginSuccess, Toast.LENGTH_SHORT).show();
 
                         finish();
+                    }
+                    else {
+                        mProgressBar.setVisibility(View.GONE);
+                        Toast.makeText(LoginActivity.this, R.string.loginUnSuccess, Toast.LENGTH_SHORT).show();
                     }
                 }
                 catch (NullPointerException e) {

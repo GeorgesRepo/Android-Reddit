@@ -18,5 +18,7 @@
     <string name="featureNotImplemented">Sorry feature not implemented yet</string>
     <string name="dialog">dialog</string>
     <string name="default_img">\@drawable/redditicon</string>
+    <string name="loginUnSuccess">Login Unsuccessful</string>
+    <string name="loginSuccess">Login Successful</string>
 
 </resources>
