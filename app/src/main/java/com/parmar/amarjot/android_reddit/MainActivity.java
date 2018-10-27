@@ -51,11 +51,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        try {
-            init();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        init();
     }
 
     // Updates menu item when user signs in
@@ -65,44 +61,49 @@ public class MainActivity extends AppCompatActivity {
         setupToolbar();
     }
 
-    private void init() throws ParseException {
+    private void init() {
 
         // Sets up the reddit feed on list view
         setupToolbar();
         pullRedditFeedOnline();
 
-//        if (useLocalDB()) {
-//            pullRedditFeedLocal();
-//        }
-//        else {
-//            pullRedditFeedOnline();
-//        }
+        if (useLocalDB()) {
+            Log.e(TAG, "init: displaying local list");
+            pullRedditFeedLocal();
+        }
+        else {
+            Log.e(TAG, "init: displaying online list");
+            pullRedditFeedOnline();
+        }
 
         setupSearchButton();
-        saveCurrentTime();
     }
 
 
-    private boolean useLocalDB () throws ParseException {
+    private boolean useLocalDB () {
 
-        // TODO Get l
-        String toyBornTime = "2018-10-27 12:56:50";
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat(
-                "yyyy-MM-dd HH:mm:ss");
-        Date oldDate = dateFormat.parse(toyBornTime);
-        System.out.println(oldDate);
+        SharedPreferences prefs = getSharedPreferences(getString(R.string.SessionLastTime), MODE_PRIVATE);
+        long lastTime = prefs.getLong("time", 0); //0 is the default value.
 
-        Date currentDate = new Date();
+        if (lastTime != 0) {
 
-        long diff = currentDate.getTime() - oldDate.getTime();
-        long seconds = diff / 1000;
-        long minutes = seconds / 60;
-        long hours = minutes / 60;
-        long days = hours / 24;
+            Date oldDate = new Date(lastTime);
+            Date currentDate = new Date();
 
-        long totalMinutes = minutes + (hours * 60);
-        if (oldDate.before(currentDate) & totalMinutes > 5) {
-            return false;
+            long diff = currentDate.getTime() - oldDate.getTime();
+            long seconds = diff / 1000;
+            long minutes = seconds / 60;
+            long hours = minutes / 60;
+            long days = hours / 24;
+
+            long totalMinutes = minutes + (hours * 60);
+
+            Log.e(TAG, "useLocalDB: total min: " + totalMinutes );
+
+            if ( totalMinutes > 1) {
+                saveCurrentTime();
+                return false;
+            }
         }
 
         return true;
