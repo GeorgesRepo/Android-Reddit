@@ -2,6 +2,7 @@ package com.parmar.amarjot.android_reddit;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String BASE_URL = "https://www.reddit.com/r/";
 
     private String currentFeed = "Art";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,6 +167,9 @@ public class MainActivity extends AppCompatActivity {
     // Attaches Posts to list and adds onClick listner
     private void attachRedditFeedToList(final ArrayList<Post> posts) {
 
+        //savePosts(posts);
+        final ArrayList<Post> localPosts = loadPosts();
+
         ListView listView = findViewById(R.id.listView);
         CustomListAdapter customListAdapter = new CustomListAdapter(MainActivity.this, R.layout.post_layout, posts);
         listView.setAdapter(customListAdapter);
@@ -172,21 +177,43 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d(TAG , "onItemClick: Clicked: " + posts.get(i).toString());
+                Log.d(TAG , "onItemClick: Clicked: " + localPosts.get(i).toString());
 
                 Intent intent = new Intent(MainActivity.this, CommentsActivity.class);
 
-                intent.putExtra(getString(R.string.post_url), posts.get(i).getPostURL());
-                intent.putExtra(getString(R.string.post_thumbnail), posts.get(i).getThumbnailURL());
-                intent.putExtra(getString(R.string.post_title), posts.get(i).getTitle());
-                intent.putExtra(getString(R.string.post_author), posts.get(i).getAuthor());
-                intent.putExtra(getString(R.string.post_updated), posts.get(i).getDate_updated());
-                intent.putExtra(getString(R.string.post_id), posts.get(i).getId());
+                intent.putExtra(getString(R.string.post_url), localPosts.get(i).getPostURL());
+                intent.putExtra(getString(R.string.post_thumbnail), localPosts.get(i).getThumbnailURL());
+                intent.putExtra(getString(R.string.post_title), localPosts.get(i).getTitle());
+                intent.putExtra(getString(R.string.post_author), localPosts.get(i).getAuthor());
+                intent.putExtra(getString(R.string.post_updated), localPosts.get(i).getDate_updated());
+                intent.putExtra(getString(R.string.post_id), localPosts.get(i).getId());
 
                 startActivity(intent);
                 overridePendingTransition( R.anim.slide_in_right, R.anim.slide_out_right);
             }
         });
+//        ListView listView = findViewById(R.id.listView);
+//        CustomListAdapter customListAdapter = new CustomListAdapter(MainActivity.this, R.layout.post_layout, posts);
+//        listView.setAdapter(customListAdapter);
+//
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                Log.d(TAG , "onItemClick: Clicked: " + posts.get(i).toString());
+//
+//                Intent intent = new Intent(MainActivity.this, CommentsActivity.class);
+//
+//                intent.putExtra(getString(R.string.post_url), posts.get(i).getPostURL());
+//                intent.putExtra(getString(R.string.post_thumbnail), posts.get(i).getThumbnailURL());
+//                intent.putExtra(getString(R.string.post_title), posts.get(i).getTitle());
+//                intent.putExtra(getString(R.string.post_author), posts.get(i).getAuthor());
+//                intent.putExtra(getString(R.string.post_updated), posts.get(i).getDate_updated());
+//                intent.putExtra(getString(R.string.post_id), posts.get(i).getId());
+//
+//                startActivity(intent);
+//                overridePendingTransition( R.anim.slide_in_right, R.anim.slide_out_right);
+//            }
+//        });
     }
 
     private void setupToolbar(){
@@ -272,5 +299,41 @@ public class MainActivity extends AppCompatActivity {
     private void removeSession() {
         PreferenceManager.getDefaultSharedPreferences(getBaseContext()).
                 edit().clear().apply();
+    }
+
+    private void savePosts(ArrayList<Post> posts) {
+
+        Log.d(TAG , "savePosts: Created");
+        SQLiteDatabaseHelper feed = new SQLiteDatabaseHelper(this,"recentFeed");
+
+        for (int i = 0; i < posts.size(); i++) {
+            Log.d(TAG , "savePosts: Saving: " + posts.get(i).getId());
+            feed.addPost(posts.get(i));
+        }
+
+    }
+
+    private ArrayList<Post> loadPosts() {
+        Log.d(TAG , "loadPosts: Created");
+        ArrayList<Post> posts = new  ArrayList<>();
+
+        SQLiteDatabaseHelper feed = new SQLiteDatabaseHelper(this,"recentFeed");
+
+        Cursor loadedPosts = feed.getPosts();
+        while (loadedPosts.moveToNext()) {
+
+            String title = loadedPosts.getString(1);
+            String author = loadedPosts.getString(2);
+            String date_updated = loadedPosts.getString(3);
+            String postURL = loadedPosts.getString(4);
+            String thumbnailURL = loadedPosts.getString(5);
+            String id = loadedPosts.getString(6);
+
+
+            Post newPost = new Post(title, author, date_updated, postURL, thumbnailURL, id);
+            posts.add(newPost);
+        }
+
+        return posts;
     }
 }
