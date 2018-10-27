@@ -13,6 +13,7 @@
 
 <a href="https://imgflip.com/gif/2fomdn"><img src="https://media.giphy.com/media/1qfeWtgJYALZmrgZP4/giphy.gif" title="Reddit-ViewComments"/></a>
 
-* Local Cache
+* No Local Cache vs Local Cache
+<a href="https://imgflip.com/gif/2fomdn"><img src="https://media.giphy.com/media/POHMRqPexXoCfLwziI/giphy.gif" title="Reddit-localcachevsfetch"/></a>
 
 
