@@ -31,6 +31,7 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.parmar.amarjot.android_reddit.Account.CheckLogin;
 import com.parmar.amarjot.android_reddit.Account.LoginActivity;
 import com.parmar.amarjot.android_reddit.ExtractXML;
 import com.parmar.amarjot.android_reddit.FeedAPI;
@@ -41,12 +42,14 @@ import com.parmar.amarjot.android_reddit.model.entry.Entry;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
 public class CommentsActivity extends AppCompatActivity {
@@ -164,7 +167,7 @@ public class CommentsActivity extends AppCompatActivity {
                 mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        getUserComment(postID);
+                        getUserComment(mComments.get(position).getId());
                     }
                 });
 
@@ -220,7 +223,7 @@ public class CommentsActivity extends AppCompatActivity {
 
     }
 
-    private void getUserComment(String post_id){
+    private void getUserComment(final String post_id){
         final Dialog dialog = new Dialog(CommentsActivity.this);
         dialog.setTitle("dialog");
         dialog.setContentView(R.layout.comment_input_dialog);
@@ -240,6 +243,59 @@ public class CommentsActivity extends AppCompatActivity {
                 Log.d(TAG, "onClick: Attempting to post comment.");
 
                 //post comment stuff for retrofit
+
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(urls.COMMENT_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                FeedAPI feedAPI = retrofit.create(FeedAPI.class);
+
+                // Make header
+                HashMap<String, String> headerMap = new HashMap<>();
+                headerMap.put("User-Agent", username);
+                headerMap.put("X-Modhash", modhash);
+                headerMap.put("cookie", "reddit_session=" + cookie);
+
+                Log.d(TAG, "btnPostComment:  \n" +
+                        "username: " + username + "\n" +
+                        "modhash: " + modhash + "\n" +
+                        "cookie: " + cookie + "\n" +
+                        "postID: " + post_id + "\n"
+                );
+
+                // Make sign in request
+                Call<CheckComment> call = feedAPI.submitComment( headerMap, "comment", post_id, "This is a comment");
+
+                call.enqueue(new Callback<CheckComment>() {
+                    @Override
+                    public void onResponse(Call<CheckComment> call, Response<CheckComment> response) {
+                        try {
+                            Log.d(TAG, "onResponse: Server Response: " + response.toString());
+
+                            String postSuccess = response.body().getSuccess();
+
+                            dialog.dismiss();
+                            Toast.makeText(CommentsActivity.this, "Comment made sucessfuly", Toast.LENGTH_SHORT).show();
+//                            if (postSuccess.equals("true")) {
+//                                dialog.dismiss();
+//                                Toast.makeText(CommentsActivity.this, "Comment made sucessfuly", Toast.LENGTH_SHORT).show();
+//                            }
+//                            else {
+//                                Toast.makeText(CommentsActivity.this, "An Error Occured. Did you sign in?", Toast.LENGTH_SHORT).show();
+//                            }
+
+                        }
+                        catch (NullPointerException e) {
+                            Log.d(TAG, "onResponse: NullPointerException: " + e.getMessage());
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<CheckComment> call, Throwable t) {
+                        Log.e(TAG, "onFailure: unable to comment: " + t.getMessage());
+                        Toast.makeText(CommentsActivity.this, "An error occured", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
     }
